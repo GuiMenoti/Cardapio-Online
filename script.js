@@ -9,6 +9,9 @@ const cartCounter = document.getElementById("cart-count")
 const addressInput = document.getElementById("address")
 const addressWarn = document.getElementById("address-warn")
 const dateSpan = document.getElementById("date-span")
+const addressInputName = document.getElementById("address-name")
+const footer = document.getElementById("footer")
+
 
 
 let cart = [];
@@ -45,12 +48,25 @@ menu.addEventListener("click", function (event) {
     // console.log (event.target)
 
     let parentButton = event.target.closest(".add-to-cart-btn")
+    
 
     if (parentButton) {
         const name = parentButton.getAttribute("data-name")
         const price = parseFloat(parentButton.getAttribute("data-price"))
-
+        Toastify({
+            text: "Pedido adicionado com sucesso!",
+            duration: 3000,
+            close: true,
+            gravity: "top", 
+            position: "right", 
+            stopOnFocus: true, 
+            style: {
+              background: "#00FF00",
+              color: "black",
+            }, 
+          }).showToast();
         addToCart(name, price)
+        footer.classList.remove("hidden")
     }
     //parsefloat usar numero (number)
 })
@@ -149,7 +165,7 @@ function removeItemCart(name) {
 
 
 
-
+//Input Erro Endereço
 addressInput.addEventListener("input", function(event) {
     let inputValue = event.target.value;
 
@@ -160,13 +176,40 @@ addressInput.addEventListener("input", function(event) {
 
 })
 
+//Input Erro Name
+addressInputName.addEventListener("input", function(event) {
+    let inputValueName = event.target.value;
+
+    if (inputValueName !== ""){
+        addressInputName.classList.remove("border-red-600")
+        addressWarnName.classList.add("hidden")
+    }
+
+})
+
+
 //finalizar Pedido
 checkoutModalBtn.addEventListener("click", function(){
      //verificação restaurante fechado
-    const isOpen = checkRestauranteOpen();
-    if (!isOpen) {
+    // const isOpen = checkRestauranteOpen();
+    // if (!isOpen) {
+    //     Toastify({
+    //         text: "Ops o Restaurante está fechado!",
+    //         duration: 3000,
+    //         close: true,
+    //         gravity: "top", 
+    //         position: "right", 
+    //         stopOnFocus: true, 
+    //         style: {
+    //           background: "#ef4444",
+    //         }, 
+    //       }).showToast();
+    //     return;
+    // }
+
+    if (cart.length === 0) {
         Toastify({
-            text: "Ops o Restaurante está fechado!",
+            text: "Você precisa adicionar algum produto ao seu carrinho!",
             duration: 3000,
             close: true,
             gravity: "top", 
@@ -177,9 +220,7 @@ checkoutModalBtn.addEventListener("click", function(){
             }, 
           }).showToast();
         return;
-    }
-
-    if (cart.length === 0) return;
+    };
 
     if(addressInput.value === "") {
         addressWarn.classList.remove ("hidden")
@@ -198,17 +239,22 @@ checkoutModalBtn.addEventListener("click", function(){
    const message = encodeURIComponent(cartItems)
    const phone = "11940382338"
 
-   window.open(`https://wa.me/${phone}? text=${message} Endereço: ${addressInput.value}`, "_blank")
+   window.open(`https://wa.me/${phone}? text=${message} Endereço: ${addressInput.value} Nome: ${addressInputName.value}`, "_blank")
+   console.log(addressInputName.value);
 
    cart.length = 0;
    updateCartModal();
 })
 
+
+
+
+
 //verificar a hora e manipular o card horario
 function checkRestauranteOpen() {
     const data = new Date();
     const hora = data.getHours();
-    return hora >= 18 && hora < 23;
+    return hora >= 18 && hora < 22;
 }
 
 
